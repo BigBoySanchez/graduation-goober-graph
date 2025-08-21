@@ -128,22 +128,33 @@ const FileUpload: React.FC<FileUploadProps> = ({ className, onGenerate }) => {
     await new Promise(resolve => setTimeout(resolve, 5000));
 
     try {
-      const graphResponse = await fetch('https://goober-api-37431267456.us-central1.run.app/graph');
-      if (!graphResponse.ok) throw new Error('Failed to fetch graph data');
-      const graphData: GraphData = await graphResponse.json();
-      console.log("graphData", graphData);
-      onGenerate?.(graphData);
-    } catch (error) {
-      toast({
-      title: "Error",
-      description: "Failed to generate graph data.",
-      variant: "destructive",
-      });
+      const res = await fetch('https://goober-api-...run.app/graph', { mode: 'cors' });
+
+      // Fail early with detail
+      if (!res.ok) throw new Error(`HTTP ${res.status} ${res.statusText}`);
+
+      // Safely parse: error pages are often HTML, not JSON
+      const ct = res.headers.get('content-type') || '';
+      const graphData: GraphData = ct.includes('application/json')
+        ? await res.json()
+        : (() => { throw new Error(`Expected JSON, got ${ct}`) })();
+
+      console.log('graphData', graphData);
       onGenerate?.({
-      nodes: [],
-      edges: [],
+        nodes: graphData?.nodes ?? [],
+        edges: graphData?.edges ?? [],
       });
+
+    } catch (err) {
+      // Don’t crash if toast isn’t wired
+      if (typeof toast === 'function') {
+        toast({ title: 'Error', description: String(err), variant: 'destructive' });
+      } else {
+        console.error('Toast missing, original error:', err);
+      }
+      onGenerate?.({ nodes: [], edges: [] });
     }
+
 
     console.log('Processing files:', completeFiles.map(f => f.file.name));
   }, [files, onGenerate]);
