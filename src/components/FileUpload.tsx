@@ -131,6 +131,7 @@ const FileUpload: React.FC<FileUploadProps> = ({ className, onGenerate }) => {
       const graphResponse = await fetch('https://goober-api-37431267456.us-central1.run.app/graph');
       if (!graphResponse.ok) throw new Error('Failed to fetch graph data');
       const graphData: GraphData = await graphResponse.json();
+      console.log("graphData", graphData);
       onGenerate?.(graphData);
     } catch (error) {
       toast({
