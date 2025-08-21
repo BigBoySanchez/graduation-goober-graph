@@ -199,12 +199,12 @@ const FileUpload: React.FC<FileUploadProps> = ({ className }) => {
         )}
 
         {/* Submit Button */}
-        <div className="flex gap-2 pt-2">
+        <div className="flex flex-col sm:flex-row gap-2 pt-2">
           <Button
             variant="academic"
             onClick={handleSubmit}
             disabled={files.filter((f) => f.status === 'complete').length === 0}
-            className="flex-1"
+            className="flex-1 min-w-0"
           >
             Generate Course Graph
           </Button>
@@ -212,6 +212,7 @@ const FileUpload: React.FC<FileUploadProps> = ({ className }) => {
             variant="outline"
             onClick={() => setFiles([])}
             disabled={files.length === 0}
+            className="sm:w-auto w-full"
           >
             Clear All
           </Button>
