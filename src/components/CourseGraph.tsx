@@ -1,4 +1,4 @@
-import React, { useCallback } from 'react';
+import React, { useCallback, useEffect } from 'react';
 import {
   ReactFlow,
   addEdge,
@@ -13,6 +13,8 @@ import {
   MarkerType,
 } from '@xyflow/react';
 import '@xyflow/react/dist/style.css';
+
+interface GraphData { nodes: Node[]; edges: Edge[]; }
 
 // Sample course data representing a computer science curriculum
 const initialNodes: Node[] = [
@@ -247,11 +249,20 @@ const initialEdges: Edge[] = [
 
 interface CourseGraphProps {
   className?: string;
+  externalGraph?: GraphData | null; // NEW: allow parent to replace the graph
 }
 
-const CourseGraph: React.FC<CourseGraphProps> = ({ className }) => {
+const CourseGraph: React.FC<CourseGraphProps> = ({ className, externalGraph }) => {
   const [nodes, setNodes, onNodesChange] = useNodesState(initialNodes);
   const [edges, setEdges, onEdgesChange] = useEdgesState(initialEdges);
+
+  // NEW: whenever the parent sends a new graph, replace everything
+  useEffect(() => {
+    if (externalGraph) {
+      setNodes(externalGraph.nodes);
+      setEdges(externalGraph.edges);
+    }
+  }, [externalGraph, setNodes, setEdges]);
 
   const onConnect = useCallback(
     (params: Connection) => {

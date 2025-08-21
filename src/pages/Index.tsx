@@ -1,9 +1,14 @@
-import React from 'react';
+import React, { useState } from 'react';
 import Header from '@/components/Header';
 import CourseGraph from '@/components/CourseGraph';
 import FileUpload from '@/components/FileUpload';
+import { Edge, Node } from '@xyflow/react';
+
+interface GraphData { nodes: Node[]; edges: Edge[]; }
 
 const Index = () => {
+   const [graph, setGraph] = useState<GraphData | null>(null);
+
   return (
     <div className="min-h-screen bg-background">
       <Header />
@@ -11,7 +16,7 @@ const Index = () => {
         <div className="grid grid-cols-1 lg:grid-cols-4 gap-8 h-[calc(100vh-8rem)]">
           {/* File Upload Sidebar */}
           <div className="lg:col-span-1 space-y-6">
-            <FileUpload />
+            <FileUpload onGenerate={setGraph} />
             
             {/* Legend */}
             <div className="academic-card p-4">
@@ -48,7 +53,7 @@ const Index = () => {
                   Interactive visualization of your academic pathway
                 </p>
               </div>
-              <CourseGraph className="h-[calc(100%-4rem)]" />
+              <CourseGraph externalGraph={graph} className="h-[calc(100%-4rem)]" />
             </div>
           </div>
         </div>

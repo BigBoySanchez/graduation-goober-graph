@@ -4,9 +4,14 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Upload, FileText, X, CheckCircle } from 'lucide-react';
 import { toast } from '@/hooks/use-toast';
 import { cn } from '@/lib/utils';
+import { Edge, Node } from '@xyflow/react';
+import { Storage } from '@google-cloud/storage';
+
+interface GraphData { nodes: Node[]; edges: Edge[]; }
 
 interface FileUploadProps {
   className?: string;
+  onGenerate?: (graph: GraphData) => void; // NEW
 }
 
 interface UploadedFile {
@@ -15,7 +20,7 @@ interface UploadedFile {
   status: 'uploading' | 'complete' | 'error';
 }
 
-const FileUpload: React.FC<FileUploadProps> = ({ className }) => {
+const FileUpload: React.FC<FileUploadProps> = ({ className, onGenerate }) => {
   const [files, setFiles] = useState<UploadedFile[]>([]);
   const [isDragOver, setIsDragOver] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -83,9 +88,9 @@ const FileUpload: React.FC<FileUploadProps> = ({ className }) => {
     setFiles((prev) => prev.filter((f) => f.id !== fileId));
   }, []);
 
-  const handleSubmit = useCallback(() => {
+  const handleSubmit = useCallback(async () => {
     const completeFiles = files.filter((f) => f.status === 'complete');
-    
+
     if (completeFiles.length === 0) {
       toast({
         title: "No Files Ready",
@@ -100,9 +105,47 @@ const FileUpload: React.FC<FileUploadProps> = ({ className }) => {
       description: `Processing ${completeFiles.length} file(s) to generate course requirements graph.`,
     });
 
-    // Here you would process the files and update the course graph
+    // Upload files to the server
+    const formData = new FormData();
+    formData.append('file', completeFiles[0].file);  // just the first one
+
+    try {
+      const response = await fetch('https://goober-api-37431267456.us-central1.run.app/upload', {
+        method: 'POST',
+        body: formData,
+      });
+      if (!response.ok) throw new Error('Upload failed');
+    } catch (error) {
+      toast({
+        title: "Upload Failed",
+        description: "There was an error uploading the file.",
+        variant: "destructive",
+      });
+    }
+
+
+    // TODO: SUPER lazy method
+    await new Promise(resolve => setTimeout(resolve, 5000));
+
+    try {
+      const graphResponse = await fetch('https://goober-api-37431267456.us-central1.run.app/graph');
+      if (!graphResponse.ok) throw new Error('Failed to fetch graph data');
+      const graphData: GraphData = await graphResponse.json();
+      onGenerate?.(graphData);
+    } catch (error) {
+      toast({
+      title: "Error",
+      description: "Failed to generate graph data.",
+      variant: "destructive",
+      });
+      onGenerate?.({
+      nodes: [],
+      edges: [],
+      });
+    }
+
     console.log('Processing files:', completeFiles.map(f => f.file.name));
-  }, [files]);
+  }, [files, onGenerate]);
 
   const formatFileSize = (bytes: number) => {
     if (bytes === 0) return '0 Bytes';
@@ -206,7 +249,7 @@ const FileUpload: React.FC<FileUploadProps> = ({ className }) => {
             disabled={files.filter((f) => f.status === 'complete').length === 0}
             className="flex-1 min-w-0"
           >
-            Burgersssss
+            Generate
           </Button>
           <Button
             variant="outline"

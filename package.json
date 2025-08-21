@@ -11,6 +11,9 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@firebase/firestore": "^4.9.0",
+    "@google-cloud/bigquery": "^8.1.1",
+    "@google-cloud/storage": "^7.17.0",
     "@hookform/resolvers": "^3.10.0",
     "@radix-ui/react-accordion": "^1.2.11",
     "@radix-ui/react-alert-dialog": "^1.1.14",
