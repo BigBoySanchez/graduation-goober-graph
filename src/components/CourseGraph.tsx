@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect } from 'react';
+import React, { useCallback } from 'react';
 import {
   ReactFlow,
   addEdge,
@@ -13,11 +13,6 @@ import {
   MarkerType,
 } from '@xyflow/react';
 import '@xyflow/react/dist/style.css';
-
-interface CourseGraphProps {
-  className?: string;
-  dynamicGraph: { nodes: Node[]; edges: Edge[] }; // New prop to watch for dynamic updates
-}
 
 // Sample course data representing a computer science curriculum
 const initialNodes: Node[] = [
@@ -250,9 +245,13 @@ const initialEdges: Edge[] = [
   },
 ];
 
-const CourseGraph: React.FC<CourseGraphProps> = ({ className, dynamicGraph }) => {
-  const [nodes, setNodes, onNodesChange] = useNodesState(initialNodes); // Initialize with initialNodes
-  const [edges, setEdges, onEdgesChange] = useEdgesState(initialEdges); // Initialize with initialEdges
+interface CourseGraphProps {
+  className?: string;
+}
+
+const CourseGraph: React.FC<CourseGraphProps> = ({ className }) => {
+  const [nodes, setNodes, onNodesChange] = useNodesState(initialNodes);
+  const [edges, setEdges, onEdgesChange] = useEdgesState(initialEdges);
 
   const onConnect = useCallback(
     (params: Connection) => {
@@ -269,12 +268,6 @@ const CourseGraph: React.FC<CourseGraphProps> = ({ className, dynamicGraph }) =>
     },
     [setEdges]
   );
-
-  // Watch for changes in dynamicGraph and update the graph
-  useEffect(() => {
-    setNodes(dynamicGraph.nodes);
-    setEdges(dynamicGraph.edges); // Use dynamic edges or fallback to initialEdges
-  }, [dynamicGraph, setNodes, setEdges]);
 
   return (
     <div className={`w-full h-full academic-card ${className}`}>
