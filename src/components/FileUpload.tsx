@@ -206,7 +206,7 @@ const FileUpload: React.FC<FileUploadProps> = ({ className }) => {
             disabled={files.filter((f) => f.status === 'complete').length === 0}
             className="flex-1 min-w-0"
           >
-            Burger
+            Burgersssss
           </Button>
           <Button
             variant="outline"
