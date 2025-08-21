@@ -128,7 +128,7 @@ const FileUpload: React.FC<FileUploadProps> = ({ className, onGenerate }) => {
     await new Promise(resolve => setTimeout(resolve, 5000));
 
     try {
-      const res = await fetch('https://goober-api-...run.app/graph', { mode: 'cors' });
+      const res = await fetch('https://goober-api-37431267456.us-central1.run.app/graph', { mode: 'cors' });
 
       // Fail early with detail
       if (!res.ok) throw new Error(`HTTP ${res.status} ${res.statusText}`);
