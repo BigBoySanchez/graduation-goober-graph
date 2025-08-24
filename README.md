@@ -1,73 +1,57 @@
-# Welcome to your Lovable project
+# 📝Notes
 
-## Project info
 
-**URL**: https://lovable.dev/projects/28e8dcad-90b0-451b-808c-fd2702c91772
+## Google Cloud Proof-of-Concept (POC) Mapping
 
-## How can I edit this code?
+- **Cloud Storage**: Data ingestion (store uploaded disaster/social data).
+- **Cloud Functions**: Trigger parsing, pseudo-labeling (Gemini), or preprocessing pipelines.
+- **Vertex AI**: Train and fine-tune SSL and domain adaptation models.
+- **BigQuery**: Store and query labeled/unlabeled datasets; analytics for dashboards.
+- **Firestore**: Track operations (e.g., status of parsing/labeling jobs).
+- **Cloud Run**: Serve model APIs (classification endpoints, graph visualizations).
+- **Firebase Hosting**: Host prototype frontends.
+- **Cloud Monitoring & Secret Manager**: Enable logging, error tracking, and API key safety.
 
-There are several ways of editing your application.
+---
 
-**Use Lovable**
+## POC App Demo
 
-Simply visit the [Lovable Project](https://lovable.dev/projects/28e8dcad-90b0-451b-808c-fd2702c91772) and start prompting.
+1. Ingest file → Parse into JSON → Store in BigQuery/Firestore.
+2. Serve graph via API (Cloud Run).
+3. Visualize graph on frontend (Hosted on Firebase).
+4. Display basic analytics on dashboard (Made with [Lovable](https://lovable.dev/)).
 
-Changes made via Lovable will be committed automatically to this repo.
+---
 
-**Use your preferred IDE**
+## Google Cloud Console
+- **Tutorials**: They even have one for deploying models w/ Vertex, which we may need later
+- **API Library**: Provides a streamlined way to enable and monitor the tools needed for the project.
+- **Sharing**: Can add multiple people to a project
+- **Free Credits**: Got $300 just for a general free trial, got $1000 for using genAI in the project ([source]((https://github.com/BigBoySanchez/graduation-goober-graph/blob/main/cloud-notes/credits.png)))
+- **DB Querying + Monitoring**: Can add / update entries on the fly, and EVERY event can be viewed in the "logs explorer"
+- **Cloud Run**: Can upload a Docker image, connect a repo, or write functions that run on Google's servers (see [cloud-notes](https://github.com/BigBoySanchez/graduation-goober-graph/blob/main/cloud-notes))
 
-If you want to work locally using your own IDE, you can clone this repo and push changes. Pushed changes will also be reflected in Lovable.
+NOTE: You can get functions to run on an event, like a file upload (see [function triggers](https://cloud.google.com/run/docs/function-triggers))
+---
 
-The only requirement is having Node.js & npm installed - [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating)
+## Security & Operations Notes
 
-Follow these steps:
+- **API Protection**: Restrict CORS to frontend domain; add token-based or Firebase Auth.
+- **File Validation**: Check file size/type to prevent abuse.
+- **Rate Limiting**: Use Cloud Armor or similar tools in production.
+- **File Management**: Use unique filenames to avoid overwrites.
+- **Monitoring**: Track Cloud Run logs and set alerts for anomalies.
 
-```sh
-# Step 1: Clone the repository using the project's Git URL.
-git clone <YOUR_GIT_URL>
+---
 
-# Step 2: Navigate to the project directory.
-cd <YOUR_PROJECT_NAME>
+## Future Considerations
 
-# Step 3: Install the necessary dependencies.
-npm i
-
-# Step 4: Start the development server with auto-reloading and an instant preview.
-npm run dev
-```
-
-**Edit a file directly in GitHub**
-
-- Navigate to the desired file(s).
-- Click the "Edit" button (pencil icon) at the top right of the file view.
-- Make your changes and commit the changes.
-
-**Use GitHub Codespaces**
-
-- Navigate to the main page of your repository.
-- Click on the "Code" button (green button) near the top right.
-- Select the "Codespaces" tab.
-- Click on "New codespace" to launch a new Codespace environment.
-- Edit files directly within the Codespace and commit and push your changes once you're done.
-
-## What technologies are used for this project?
-
-This project is built with:
-
-- Vite
-- TypeScript
-- React
-- shadcn-ui
-- Tailwind CSS
-
-## How can I deploy this project?
-
-Simply open [Lovable](https://lovable.dev/projects/28e8dcad-90b0-451b-808c-fd2702c91772) and click on Share -> Publish.
-
-## Can I connect a custom domain to my Lovable project?
-
-Yes, you can!
-
-To connect a domain, navigate to Project > Settings > Domains and click Connect Domain.
-
-Read more here: [Setting up a custom domain](https://docs.lovable.dev/tips-tricks/custom-domain#step-by-step-guide)
+- Find a better way to detect DB updates (don't do what I did on [src/components/FileUpload.tsx:128](https://github.com/BigBoySanchez/graduation-goober-graph/blob/main/src/components/FileUpload.tsx#L128))
+- For homemade model hosting:
+    - Save the model file (.pt for pyTorch)
+    - Make an API server around it
+    - Containerize that server (using Docker)
+    - Deploy on Vertex AI or Google Cloud Run
+- Use [Firebase Tokens](https://cloud.google.com/run/docs/authenticating/end-users) for more secure API's
+- Using Firebase to deploy makes all types of auth easier
+- Use [secret manager](https://cloud.google.com/security/products/secret-manager) to secure API keys
